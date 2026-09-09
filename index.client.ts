@@ -1,4 +1,5 @@
-import type { PluginContext, PluginThemeContribution } from "@getpaseo/plugin";
+import type { PluginThemeContribution } from "@getpaseo/plugin";
+import type { PluginClientContext } from "@getpaseo/plugin/client";
 
 /**
  * Monokai Pro filter schemes. Every hex traces back to a documented Monokai Pro token, so the
@@ -129,9 +130,9 @@ const LIGHT_FILTERS: readonly PluginThemeContribution[] = [
   },
 ];
 
-export default function contribute(plugin: PluginContext) {
+export default function contribute(client: PluginClientContext) {
   for (const scheme of DARK_FILTERS) {
-    plugin.addTheme({
+    client.addTheme({
       id: scheme.id,
       name: scheme.name,
       appearance: "dark",
@@ -149,7 +150,7 @@ export default function contribute(plugin: PluginContext) {
   }
 
   for (const theme of LIGHT_FILTERS) {
-    plugin.addTheme(theme);
+    client.addTheme(theme);
   }
 
   return () => {};

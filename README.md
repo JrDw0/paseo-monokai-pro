@@ -18,14 +18,22 @@ packages.
 | Monokai Pro (Octagon)   | `octagon`   | dark         |
 | Monokai Pro (Spectrum)  | `spectrum`  | dark         |
 
-Requires Paseo **0.5.0 or later** — that is when `addTheme` landed. On an older daemon the call
-compiles into the backend bundle, where the method does not exist, and the plugin fails to start
-with `plugin.addTheme is not a function`.
+Requires Paseo **0.8 or later** — the plugin uses the v0.8 runtime entries layout
+(`index.client.ts`). On Paseo 0.7.x, install the last 0.7 build instead:
+
+```bash
+paseo plugin add JrDw0/paseo-monokai-pro --ref v0.1.0
+```
+
+An older daemon rejects the current build with `This plugin was made for an older version of
+Paseo`, and a 0.8 daemon rejects `v0.1.0` the same way — the two layouts are not loadable by each
+other, hence the tag.
 
 ## Install
 
 ```bash
-paseo plugin add JrDw0/paseo-monokai-pro
+paseo plugin add JrDw0/paseo-monokai-pro            # Paseo 0.8+
+paseo plugin add JrDw0/paseo-monokai-pro --ref v0.1.0  # Paseo 0.7.x
 ```
 
 Then pick a theme in **Settings → Appearance**. The daemon needs `pluginsEnabled: true`
@@ -80,8 +88,8 @@ comment `#75715E` rather than the port's recomputed values.
   source.
 - **Light buttons hit 3.03:1.** Paseo derives `accentForeground` from `background`, so `#FAF4F2`
   text on the official light `accent3` `#CC7A0A` clears AA for large text only. Set
-  `accent: "#7058BE"` (official `accent6`, 5.04:1) in `index.ts` if you want AA body-text labels on
-  buttons.
+  `accent: "#7058BE"` (official `accent6`, 5.04:1) in `index.client.ts` if you want AA body-text
+  labels on buttons.
 - `statusDanger`, diff tints, and shadows come from Paseo's built-in derivations; the plugin API
   exposes no knobs for them.
 - Theme selection is global — only one contributed theme is active at a time, across all themes and
@@ -89,10 +97,10 @@ comment `#75715E` rather than the port's recomputed values.
 
 ## Entry point
 
-`index.ts` is the v0.7.x single-entry layout: Paseo compiles it into a client bundle and a server
-bundle, and `addTheme` is collected from the client side. Paseo 0.8 renames the client entry to
-`index.client.ts` and moves `addTheme` onto the client context — one file rename plus the param
-type, per the official v0.8 migration guide.
+`index.client.ts` is the v0.8 client entry; the theme is data, so there is no server entry and no
+subprocess work at all. `PluginClientContext` comes from `@getpaseo/plugin/client`, and every
+`add*` returns an idempotent remover — this plugin keeps none, so Paseo drops the seven themes at
+cleanup. The `v0.1.0` tag holds the pre-migration `index.ts` layout for 0.7 daemons.
 
 ## Development
 
