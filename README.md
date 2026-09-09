@@ -18,24 +18,32 @@ packages.
 | Monokai Pro (Octagon)   | `octagon`   | dark         |
 | Monokai Pro (Spectrum)  | `spectrum`  | dark         |
 
-Requires Paseo **0.8 or later** — the plugin uses the v0.8 runtime entries layout
-(`index.client.ts`). The real requirement is the plugin runtime, not the app's version label: any
-build that rejects an `index.ts` entry wants this layout. On Paseo 0.7.x, install the last 0.7
-build instead:
+Paseo's plugin runtime changed twice around 0.8, so pick the ref that matches your host:
 
-```bash
-paseo plugin add JrDw0/paseo-monokai-pro --ref v0.1.0
-```
+| Host | Install |
+| ---- | ------- |
+| Paseo 0.8.0-beta.1 and later | `paseo plugin add JrDw0/paseo-monokai-pro` |
+| 0.8 builds that load `index.client.ts` but reject `requirements` in the manifest (0.8 nightlies still labeled 0.7.2) | `paseo plugin add JrDw0/paseo-monokai-pro --ref v0.2.0` |
+| Paseo 0.7.x | `paseo plugin add JrDw0/paseo-monokai-pro --ref v0.1.0` |
 
-An older daemon rejects the current build with `This plugin was made for an older version of
-Paseo`, and a 0.8 daemon rejects `v0.1.0` the same way — the two layouts are not loadable by each
-other, hence the tag.
+Main declares `requirements.paseo: "^0.8.0"`, which 0.8 hosts require — a plugin without it is
+rejected as pre-0.8. The transitional builds cannot parse that key, hence `v0.2.0`, which carries
+the v0.8 entry layout with a manifest those hosts accept. `v0.1.0` is the single-`index.ts` layout
+0.7 needs.
+
+Which error means which:
+
+| Error | Fix |
+| ----- | --- |
+| `This plugin was made for an older version of Paseo and cannot run on Paseo v0.8` | Not `v0.1.0` — use main or `v0.2.0`. |
+| `Unrecognized key: "requirements"` | `--ref v0.2.0`. |
+| `Plugin "monokai-pro" requires Paseo ^0.8.0` | Host is older than the range — `v0.2.0` or `v0.1.0`. |
+| `has no requirements.paseo and targets Paseo before 0.8` | Real 0.8 host on an old tag — use main. |
 
 ## Install
 
 ```bash
-paseo plugin add JrDw0/paseo-monokai-pro            # Paseo 0.8+
-paseo plugin add JrDw0/paseo-monokai-pro --ref v0.1.0  # Paseo 0.7.x
+paseo plugin add JrDw0/paseo-monokai-pro               # Paseo 0.8.0-beta.1+
 ```
 
 Then pick a theme in **Settings → Appearance**. The daemon needs `pluginsEnabled: true`
@@ -102,7 +110,7 @@ comment `#75715E` rather than the port's recomputed values.
 `index.client.ts` is the v0.8 client entry; the theme is data, so there is no server entry and no
 subprocess work at all. `PluginClientContext` comes from `@getpaseo/plugin/client`, and every
 `add*` returns an idempotent remover — this plugin keeps none, so Paseo drops the seven themes at
-cleanup. The `v0.1.0` tag holds the pre-migration `index.ts` layout for 0.7 daemons.
+cleanup. Tags `v0.1.0` and `v0.2.0` hold the older host layouts; see the ref table above.
 
 ## Development
 
