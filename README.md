@@ -19,7 +19,9 @@ packages.
 | Monokai Pro (Spectrum)  | `spectrum`  | dark         |
 
 Requires Paseo **0.8 or later** — the plugin uses the v0.8 runtime entries layout
-(`index.client.ts`). On Paseo 0.7.x, install the last 0.7 build instead:
+(`index.client.ts`). The real requirement is the plugin runtime, not the app's version label: any
+build that rejects an `index.ts` entry wants this layout. On Paseo 0.7.x, install the last 0.7
+build instead:
 
 ```bash
 paseo plugin add JrDw0/paseo-monokai-pro --ref v0.1.0
