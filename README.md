@@ -26,10 +26,12 @@ Paseo's plugin runtime changed twice around 0.8, so pick the ref that matches yo
 | 0.8 builds that load `index.client.ts` but reject `requirements` in the manifest (0.8 nightlies still labeled 0.7.2) | `paseo plugin add JrDw0/paseo-monokai-pro --ref v0.2.0` |
 | Paseo 0.7.x | `paseo plugin add JrDw0/paseo-monokai-pro --ref v0.1.0` |
 
-Main declares `requirements.paseo: "^0.8.0"`, which 0.8 hosts require — a plugin without it is
-rejected as pre-0.8. The transitional builds cannot parse that key, hence `v0.2.0`, which carries
-the v0.8 entry layout with a manifest those hosts accept. `v0.1.0` is the single-`index.ts` layout
-0.7 needs.
+Main declares `requirements.paseo: ">=0.8.0 <0.11.0"`, which 0.8 hosts require — a plugin without
+it is rejected as pre-0.8. The range is a range, not a label: the daemon checks its own version
+against it, so a caret pinned to one minor rejects every later host. Widen it when a new Paseo
+minor lands and the theme API still loads, and retag if the layout changes again. The transitional
+builds cannot parse that key, hence `v0.2.0`, which carries the v0.8 entry layout with a manifest
+those hosts accept. `v0.1.0` is the single-`index.ts` layout 0.7 needs.
 
 Which error means which:
 
@@ -37,7 +39,8 @@ Which error means which:
 | ----- | --- |
 | `This plugin was made for an older version of Paseo and cannot run on Paseo v0.8` | Not `v0.1.0` — use main or `v0.2.0`. |
 | `Unrecognized key: "requirements"` | `--ref v0.2.0`. |
-| `Plugin "monokai-pro" requires Paseo ^0.8.0` | Host is older than the range — `v0.2.0` or `v0.1.0`. |
+| `Plugin "monokai-pro" requires Paseo <range>` and the host is **older** | Host predates the range — `v0.2.0` or `v0.1.0`. |
+| `Plugin "monokai-pro" requires Paseo <range>` and the host is **newer** | The range has not been widened for that minor yet — main after the bump, or widen it yourself in a fork. |
 | `has no requirements.paseo and targets Paseo before 0.8` | Real 0.8 host on an old tag — use main. |
 
 ## Install
