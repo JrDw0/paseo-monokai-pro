@@ -26,7 +26,7 @@ Paseo's plugin runtime changed twice around 0.8, so pick the ref that matches yo
 | 0.8 builds that load `index.client.ts` but reject `requirements` in the manifest (0.8 nightlies still labeled 0.7.2) | `paseo plugin add JrDw0/paseo-monokai-pro --ref v0.2.0` |
 | Paseo 0.7.x | `paseo plugin add JrDw0/paseo-monokai-pro --ref v0.1.0` |
 
-Main declares `requirements.paseo: ">=0.8.0 <0.11.0"`, which 0.8 hosts require — a plugin without
+Main declares `requirements.paseo: ">=0.8.0 <0.12.0"`, which 0.8 hosts require — a plugin without
 it is rejected as pre-0.8. The range is a range, not a label: the daemon checks its own version
 against it, so a caret pinned to one minor rejects every later host. Widen it when a new Paseo
 minor lands and the theme API still loads, and retag if the layout changes again. The transitional
